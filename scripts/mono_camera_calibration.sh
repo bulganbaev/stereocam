@@ -2,11 +2,11 @@
 
 image_dir=data/lenacv-camera
 save_dir=configs/lenacv-camera # 保存标定结果
-width=8
-height=11
+width=7
+height=10
 square_size=25 #mm
 image_format=png # png,jpg
-show=True
+show=False
 # left camera calibration
 python mono_camera_calibration.py \
     --image_dir  $image_dir \

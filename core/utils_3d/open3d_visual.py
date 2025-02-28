@@ -7,7 +7,15 @@
     @Date   : 2019-10-11 10:04:34
 """
 import cv2
+
+import os
+os.environ["PYOPENGL_PLATFORM"] = "egl"  # Отключает OpenGL
+
+
 import open3d as open3d
+import open3d.visualization as o3d_vis
+from open3d import geometry
+
 from core.utils_3d import open3d_tools
 from core.utils_3d.core import camera_tools
 
@@ -23,15 +31,18 @@ class Open3DVisual(object):
         self.camera_intrinsic = camera_intrinsic
 
         # Create Open3D Visualizer
-        self.vis = open3d.Visualizer()
+        self.vis = o3d_vis.Visualizer()
+
         self.vis.create_window('Open3D_1', width=depth_width, height=depth_height,
                                left=10, top=10)
         self.vis.get_render_option().point_size = 3
 
         # 定义图像点云
-        self.image_pcd = open3d.PointCloud()
+        self.image_pcd = open3d.geometry.PointCloud()
+
         # 定义原点
-        self.origin_point = open3d.geometry.create_mesh_coordinate_frame(size=0.5, origin=[0, 0, 0])
+        self.origin_point = open3d.geometry.TriangleMesh.create_coordinate_frame(size=0.5, origin=[0, 0, 0])
+
         self.cam = camera_tools.Camera(self.camera_intrinsic)
 
     def show_image_pcd(self, isshow=True):
@@ -59,9 +70,9 @@ class Open3DVisual(object):
         self.__update(color_image, depth_image)
 
     def __update(self, color_image, depth_image):
-        self.vis.update_geometry()
+        self.vis.update_geometry(self.image_pcd)
         self.vis.poll_events()
-        self.vis.update_renderer()
+        self.vis.update_geometry(self.image_pcd)
 
     def close(self):
         self.vis.destroy_window()

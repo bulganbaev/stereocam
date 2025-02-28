@@ -16,7 +16,7 @@ from core import camera_params, stereo_matcher
 class StereoDepth(object):
     """双目测距"""
 
-    def __init__(self, stereo_file, width=640, height=480, filter=True, use_open3d=True, use_pcl=False):
+    def __init__(self, stereo_file, width=1920, height=1080, filter=True, use_open3d=True, use_pcl=False):
         """
         :param stereo_file: 双目相机内外参数配置文件
         :param width: 相机分辨率width
@@ -44,6 +44,9 @@ class StereoDepth(object):
             self.open3d_viewer.show_image_pcd(True)
             self.open3d_viewer.show_origin_pcd(True)
             self.open3d_viewer.show_image_pcd(True)
+        print("Expected size from config:", self.camera_config["size"])
+        print("Actual size from input:", width, height)
+
         assert (width, height) == self.camera_config["size"], Exception("Error:{}".format(self.camera_config["size"]))
 
     def test_pair_image_file(self, left_file, right_file):
@@ -274,7 +277,7 @@ def get_parser():
 
 if __name__ == '__main__':
     args = get_parser().parse_args()
-    stereo = StereoDepth(args.stereo_file, filter=args.filter)
+    stereo = StereoDepth(args.stereo_file, filter=args.filter, use_open3d=False)
     if args.left_video is not None and args.right_video is not None:
         # 双USB连接线的双目摄像头
         stereo.capture2(left_video=args.left_video, right_video=args.right_video)
@@ -287,3 +290,6 @@ if __name__ == '__main__':
     if args.left_file and args.right_file:
         # 测试一对左右图像
         stereo.test_pair_image_file(args.left_file, args.right_file)
+
+    cv2.destroyAllWindows()
+    exit(0)  # Полностью завершает программу

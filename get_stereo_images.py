@@ -181,13 +181,10 @@ if __name__ == '__main__':
     args = get_parser().parse_args()
     stereo = StereoCamera(args.width, args.height, detect=args.detect)
     if args.left_video > -1 and args.right_video > -1:
-        # 双USB连接线的双目摄像头
         stereo.capture2(left_video=args.left_video, right_video=args.right_video, save_dir=args.save_dir)
     elif args.left_video > -1:
-        # 单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
         stereo.capture1(video=args.left_video, save_dir=args.save_dir)
     elif args.right_video > -1:
-        # 单USB连接线的双目摄像头(左右摄像头被拼接在同一个视频中显示)
         stereo.capture1(video=args.right_video, save_dir=args.save_dir)
     else:
         raise Exception("Error: Check your camera{}".format(args.left_video, args.right_video))

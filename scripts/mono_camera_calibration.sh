@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-image_dir=data/lenacv-camera
-save_dir=configs/lenacv-camera # 保存标定结果
+image_dir=data/camera
+save_dir=configs/camera # 保存标定结果
 width=7
 height=10
 square_size=25 #mm

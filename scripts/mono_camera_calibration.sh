@@ -2,9 +2,9 @@
 
 image_dir=data/camera
 save_dir=configs/camera # 保存标定结果
-width=7
-height=10
-square_size=25 #mm
+width=8
+height=6
+square_size=80 #mm
 image_format=png # png,jpg
 show=False
 # left camera calibration

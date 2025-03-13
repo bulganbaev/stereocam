@@ -3,7 +3,7 @@
 width=8
 height=6
 left_video=0
-right_video=-1
+right_video=1
 save_dir="data/camera"
 detect=True
 

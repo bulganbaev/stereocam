@@ -11,11 +11,12 @@ import argparse
 import numpy as np
 from core.utils import image_utils, file_utils
 from core import camera_params, stereo_matcher
-from core.camera_driver import CameraDriver  # Импортируем CameraDriver
+from core.camera_driver import CameraDriver  # Используем CameraDriver вместо OpenCV VideoCapture
+from core.utils_3d import open3d_visual  # Добавляем Open3D
 
 
 class StereoDepth(object):
-    """Класс для работы с двумя камерами и получения 3D-точек."""
+    """Класс для работы с двумя камерами и вычисления 3D-точек."""
 
     def __init__(self, stereo_file, width=1920, height=1080, filter=True, use_open3d=True, use_pcl=False):
         self.count = 0
@@ -24,12 +25,21 @@ class StereoDepth(object):
         self.use_pcl = use_pcl
         self.use_open3d = use_open3d
 
+        if self.use_open3d:
+            self.open3d_viewer = open3d_visual.Open3DVisual(camera_intrinsic=self.camera_config["K1"],
+                                                            depth_width=width,
+                                                            depth_height=height)
+            self.open3d_viewer.show_image_pcd(True)
+            self.open3d_viewer.show_origin_pcd(True)
+            self.open3d_viewer.show_image_pcd(True)
+
         assert (width, height) == self.camera_config["size"], f"Error: expected size {self.camera_config['size']}"
 
     def capture2(self, left_camera_id, right_camera_id):
         """Захват видео с двух камер с использованием CameraDriver."""
         camL = CameraDriver(camera_id=left_camera_id, width=1920, height=1080, flip_horizontal=True, flip_vertical=True)
-        camR = CameraDriver(camera_id=right_camera_id, width=1920, height=1080, flip_vertical=True, flip_horizontal=True)
+        camR = CameraDriver(camera_id=right_camera_id, width=1920, height=1080, flip_horizontal=True,
+                            flip_vertical=True)
 
         camL.start_camera()
         camR.start_camera()
@@ -65,6 +75,7 @@ class StereoDepth(object):
         grayR = cv2.cvtColor(rectifiedR, cv2.COLOR_BGR2GRAY)
         dispL = self.get_disparity(grayL, grayR, self.filter)
         points_3d = self.get_3dpoints(dispL, Q=self.camera_config["Q"])
+        self.show_3dcloud_for_open3d(frameL, frameR, points_3d)
         self.show_2dimage(frameL, frameR, points_3d, dispL, waitKey=waitKey)
 
     def get_disparity(self, imgL, imgR, use_wls=True):
@@ -73,6 +84,11 @@ class StereoDepth(object):
     def get_3dpoints(self, disparity, Q, scale=1.0):
         points_3d = cv2.reprojectImageTo3D(disparity, Q) * scale
         return np.asarray(points_3d, dtype=np.float32)
+
+    def show_3dcloud_for_open3d(self, frameL, frameR, points_3d):
+        if self.use_open3d:
+            x, y, depth = cv2.split(points_3d)
+            self.open3d_viewer.show(color_image=frameL, depth_image=depth)
 
     def show_2dimage(self, frameL, frameR, points_3d, dispL, waitKey=0):
         depth_colormap = stereo_matcher.get_visual_depth(points_3d[:, :, 2])

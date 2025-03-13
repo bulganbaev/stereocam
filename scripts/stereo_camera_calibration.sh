@@ -2,9 +2,9 @@
 
 image_dir=data/lenacv-camera # 棋盘格图片
 save_dir=configs/lenacv-camera # 保存标定结果
-width=7
-height=10
-square_size=25 #mm
+width=8
+height=6
+square_size=80 #mm
 image_format=png # 图片格式，如png,jpg
 #show_2dimage=True # 是否显示检测结果
 show=False # 是否显示检测结果

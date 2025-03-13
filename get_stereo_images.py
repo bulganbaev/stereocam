@@ -59,8 +59,10 @@ class StereoCamera:
             else:
                 l, r = frameL.copy(), frameR.copy()
 
-            cv2.imshow('Left Camera', l)
-            cv2.imshow('Right Camera', r)
+            combined = cv2.hconcat([l, r])
+            cv2.namedWindow("Dual Cameras", cv2.WINDOW_NORMAL)  # Делаем окно изменяемым
+            cv2.resizeWindow("Dual Cameras", 1920, 1080)
+            cv2.imshow("Dual Cameras", combined)
             key = cv2.waitKey(10)
 
             if key == ord('q'):

@@ -95,6 +95,6 @@ def get_parser():
 
 if __name__ == '__main__':
     args = get_parser().parse_args()
-    stereo = StereoDepth(args.stereo_file, filter=args.filter, use_open3d=False)
+    stereo = StereoDepth(args.stereo_file, filter=args.filter, use_open3d=True)
     stereo.capture2(left_camera_id=args.left_camera, right_camera_id=args.right_camera)
     cv2.destroyAllWindows()
